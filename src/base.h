@@ -80,25 +80,25 @@ struct PinValues {
         static constexpr PinMode ANALOG_INPUT     = MODE_ANALOG_INPUT;
         static constexpr PinMode FLOATING_INPUT    = MODE_FLOATING_INPUT;
         static constexpr PinMode PULL_INPUT = MODE_PULL_INPUT;
-    }
+    };
     struct OUTPUT2 {
         static constexpr PinMode GP_PUSH_PULL = MODE_GP_PUSH_PULL_2;
         static constexpr PinMode GP_OPEN_DRAIN = MODE_GP_OPEN_DRAIN_2;
         static constexpr PinMode AF_PUSH_PULL = MODE_AF_PUSH_PULL_2;
         static constexpr PinMode AF_OPEN_DRAIN = MODE_AF_OPEN_DRAIN_2;
-    }
+    };
     struct OUTPUT10 {
         static constexpr PinMode GP_PUSH_PULL = MODE_GP_PUSH_PULL_10;
         static constexpr PinMode GP_OPEN_DRAIN = MODE_GP_OPEN_DRAIN_10;
         static constexpr PinMode AF_PUSH_PULL = MODE_AF_PUSH_PULL_10;
         static constexpr PinMode AF_OPEN_DRAIN = MODE_AF_OPEN_DRAIN_10;
-    }
+    };
     struct OUTPUT50 {
         static constexpr PinMode GP_PUSH_PULL = MODE_GP_PUSH_PULL_50;
         static constexpr PinMode GP_OPEN_DRAIN = MODE_GP_OPEN_DRAIN_50;
         static constexpr PinMode AF_PUSH_PULL = MODE_AF_PUSH_PULL_50;
         static constexpr PinMode AF_OPEN_DRAIN = MODE_AF_OPEN_DRAIN_50;
-    }
+    };
 
     INPUT INPUT;
     OUTPUT2 OUTPUT2;
