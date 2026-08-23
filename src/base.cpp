@@ -21,3 +21,9 @@ PinState GpioPin::readPin(uint8_t pin) {
 void GpioPin::togglePin(uint8_t pin) {
     this->id->ODR ^= (1U << pin);
 }
+
+void GpioPin::setPinPullMode(uint8_t pin, PinPullMode mode) {
+    uint32_t bit_position = (uint32_t)pin * 2U;
+    this->id->PUPDR &= ~(0x3U << bit_position);
+    this->id->PUPDR |= ((uint32_t)mode << bit_position);
+}

@@ -36,7 +36,7 @@ No need to cherry-pick which family's `.cpp` files to add: every family's `_pin.
 
 ## Architecture
 
-- **`base.h` / `base.cpp`** — `GpioPin`, the portable part. Pure register operations (`setPinMode`, `writePin`, `readPin`, `togglePin`) on a `GPIO_TypeDef*`. `writePin`/`readPin`/`togglePin` (via `ODR`/`IDR`) are identical across every family, F1 included, so they never need porting. `setPinMode` is the exception — it's `MODER`-based, which F1 doesn't have; see the F1 note below.
+- **`base.h` / `base.cpp`** — `GpioPin`, the portable part. Pure register operations (`setPinMode`, `setPinPullMode`, `writePin`, `readPin`, `togglePin`) on a `GPIO_TypeDef*`. `writePin`/`readPin`/`togglePin` (via `ODR`/`IDR`) are identical across every family, F1 included, so they never need porting. `setPinMode` (`MODER`) and `setPinPullMode` (`PUPDR`) are the exceptions — F1 has neither register; see the F1 note below.
 - **`<family>/simplestm32<family>_device.h`** — the *only* place a family's raw device-macro list (`STM32F401xC`, `STM32F407xx`, ...) lives. It does nothing but check those macros and, if they match, define `SIMPLESTM32_<FAMILY>` and `SIMPLESTM32_DEVICE_MATCHED` — no CMSIS include, no classes, so it's always safe to include from anywhere. Every other family-specific file — `_pin.h` today, a future `_uart.h`/`_timer.h` — includes this and guards on the short derived macro instead of repeating the device list. A new device variant in an existing family only ever touches this one file.
 - **`<family>/simplestm32<family>_pin.h/.cpp`** — `PinID`, the family-specific clock-gating piece: enabling/disabling the port's peripheral clock in its constructor/destructor. The RCC register and bit-name prefix differ per family (see table below).
 - **`PinA` … `PinK`** — one thin subclass of `PinID` per GPIO port, each wrapped in `#if defined(GPIOx)` so only the ports that actually exist on the specific chip you're building for get compiled in. This also means a `PinA` object anywhere always means "port A on whatever chip you're targeting."
@@ -59,7 +59,7 @@ Every family below has a generated `PinID`/`PinA`..`PinK` implementation, using 
 
 **Only STM32C0 has been built and run** (via [`stmenv1/`](../stmenv1), see below) — the rest compile against the correct registers but haven't been hardware- or simulator-tested yet.
 
-**STM32F1** uses the older `CRL`/`CRH` GPIO peripheral instead of `MODER`, so it doesn't share the common `PinMode` enum or `GpioPin::setPinMode`. `base.h` compiles a completely different `PinMode` for F1: each enumerator's value *is* the 4-bit CNF+MODE(+speed) field written directly into `CRL`/`CRH`, exposed via nested constants — `PIN.INPUT.*`, `PIN.OUTPUT2.*`, `PIN.OUTPUT10.*`, `PIN.OUTPUT50.*` (grouped by output speed) — and `f1/simplestm32f1_pin.cpp` provides its own `PinID::setPinMode` override that packs the value into the right nibble of `CRL` (pins 0–7) or `CRH` (pins 8–15). `writePin`/`readPin`/`togglePin` are unaffected, since F1 has the same `ODR`/`IDR` registers as every other family.
+**STM32F1** uses the older `CRL`/`CRH` GPIO peripheral instead of `MODER`, so it doesn't share the common `PinMode` enum or `GpioPin::setPinMode`. `base.h` compiles a completely different `PinMode` for F1: each enumerator's value *is* the 4-bit CNF+MODE(+speed) field written directly into `CRL`/`CRH`, exposed via nested constants — `PIN.INPUT.*`, `PIN.OUTPUT2.*`, `PIN.OUTPUT10.*`, `PIN.OUTPUT50.*` (grouped by output speed) — and `f1/simplestm32f1_pin.cpp` provides its own `PinID::setPinMode` override that packs the value into the right nibble of `CRL` (pins 0–7) or `CRH` (pins 8–15). `writePin`/`readPin`/`togglePin` are unaffected, since F1 has the same `ODR`/`IDR` registers as every other family. Pull-up/down works the same way: F1 has no `PUPDR` either, so `PinID::setPinPullMode` puts the pin into `PIN.INPUT.PULL_INPUT` mode itself (via `setPinMode`) and then picks pull-up vs. pull-down by writing that pin's `ODR` bit through `BSRR` — one self-contained call with the same signature (`setPinPullMode(pin, PIN.PULLUP` / `PIN.PULLDOWN)`) as every other family.
 
 ## Testing
 
@@ -68,7 +68,6 @@ The [`stmenv1/`](../stmenv1) folder at the repository root is a CMake project ta
 ## Known limitations
 
 - GPIO only — no UART, SPI, I2C, timers, or clock configuration yet.
-- No dedicated pull-up/down API on any family yet. MODER-style families have no `PUPDR` wrapper; F1 needs `setPinMode(pin, PIN.INPUT.PULL_INPUT)` followed by `writePin(pin, HIGH/LOW)` to pick pull-up vs. pull-down via `ODR`, since F1 has no separate pull register at all.
 - No package/install target; consumed by pointing your own build at `src/`.
 - No semantic versioning yet — this is alpha, expect breaking changes.
 

@@ -26,7 +26,31 @@ public:
      * @param id      Base pointer of the target GPIO port (e.g. GPIOA).
      */
     PinID(uint16_t pinmask, GPIO_TypeDef* id);
+
+    /**
+     * @brief Configure a pin's function via F1's CRL/CRH registers.
+     *
+     * Overrides GpioPin::setPinMode -- F1 has no MODER register. Each
+     * PinMode enumerator already encodes the exact 4-bit CNF+MODE(+speed)
+     * field, so this just writes it into the right nibble of CRL
+     * (pins 0-7) or CRH (pins 8-15).
+     * @param pin  Pin number within the port (0-15).
+     * @param mode One of PIN.INPUT.*, PIN.OUTPUT2.*, PIN.OUTPUT10.*, PIN.OUTPUT50.*.
+     */
     void setPinMode(uint8_t pin, PinMode mode);
+
+    /**
+     * @brief Select pull-up or pull-down for a pin, configuring it as a pull input.
+     *
+     * F1 has no PUPDR register: pull direction on an input pin is chosen by
+     * that pin's ODR bit (set here via BSRR) while CNF=10/MODE=00. This
+     * puts the pin into PIN.INPUT.PULL_INPUT mode itself, so it's a
+     * complete, self-sufficient call -- no separate setPinMode needed first.
+     * @param pin  Pin number within the port (0-15).
+     * @param mode PIN.PULLUP or PIN.PULLDOWN.
+     */
+    void setPinPullMode(uint8_t pin, PinPullMode mode);
+
     ~PinID();
 };
 

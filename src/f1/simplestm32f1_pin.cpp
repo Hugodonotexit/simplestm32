@@ -12,6 +12,14 @@ void PinID::setPinMode(uint8_t pin, PinMode mode) {
     *reg = (*reg & ~(0xFU << shift)) | ((uint32_t)mode << shift);
 }
 
+void PinID::setPinPullMode(uint8_t pin, PinPullMode mode) {
+    this->setPinMode(pin, MODE_PULL_INPUT);
+    if (mode) {
+        this->id->BSRR = (1U << pin);
+    } else {
+        this->id->BSRR = (1U << (pin + 16U));
+    }
+}
 PinID::~PinID() {
     RCC->APB2ENR &= ~pinmask;
 }

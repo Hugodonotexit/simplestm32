@@ -15,6 +15,13 @@ enum PinMode{
     MODE_ALTERNATE = 2,
     MODE_ANALOG = 3
 };
+
+enum PinPullMode {
+    MODE_FLOATING = 0,
+    MODE_PULLUP = 1,
+    MODE_PULLDOWN = 2,
+};
+
 #else
 
 enum PinMode : uint8_t {
@@ -40,7 +47,13 @@ enum PinMode : uint8_t {
     MODE_AF_OPEN_DRAIN_50    = 0b1111,
 };
 
+enum PinPullMode {
+    MODE_PULLUP = 1,
+    MODE_PULLDOWN = 0,
+};
+
 #endif
+
 
 
 /**
@@ -57,7 +70,12 @@ struct PinValues {
     static constexpr PinMode OUTPUT    = MODE_OUTPUT;
     static constexpr PinMode ALTERNATE = MODE_ALTERNATE;
     static constexpr PinMode ANALOG    = MODE_ANALOG;
+    static constexpr PinPullMode PULLUP    = MODE_PULLUP;
+    static constexpr PinPullMode PULLDOWN = MODE_PULLDOWN;
+    static constexpr PinPullMode FLOATING    = MODE_FLOATING;
     #else
+    static constexpr PinPullMode PULLUP    = MODE_PULLUP;
+    static constexpr PinPullMode PULLDOWN = MODE_PULLDOWN;
     struct INPUT {
         static constexpr PinMode ANALOG_INPUT     = MODE_ANALOG_INPUT;
         static constexpr PinMode FLOATING_INPUT    = MODE_FLOATING_INPUT;
@@ -107,7 +125,7 @@ public:
     /**
      * @brief Configure a pin's function (input, output, alternate function, analog).
      * @param pin  Pin number within the port (0-15).
-     * @param mode One of pin.input / pin.output / pin.alternate / pin.analog.
+     * @param mode One of PIN.INPUT / PIN.OUTPUT / PIN.ALTNERATIVE / PIN.ANALOG.
      */
     void setPinMode(uint8_t pin, PinMode mode);
 
@@ -130,4 +148,11 @@ public:
      * @param pin Pin number within the port (0-15).
      */
     void togglePin(uint8_t pin);
+
+    /**
+     * @brief Enable or disable a pin's internal pull-up/pull-down resistor via PUPDR.
+     * @param pin  Pin number within the port (0-15).
+     * @param mode PIN.FLOATING (no pull), PIN.PULLUP, or PIN.PULLDOWN.
+     */
+    void setPinPullMode(uint8_t pin, PinPullMode mode);
 };
