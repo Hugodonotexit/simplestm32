@@ -1,0 +1,133 @@
+#pragma once
+#include <stdint.h>
+
+/** Logic level of a GPIO pin. */
+enum PinState{
+    PIN_LOW = 0,
+    PIN_HIGH =1
+};
+
+#if !defined(SIMPLESTM32_F1)
+/** Function of a GPIO pin, as programmed in the port's MODER register. */
+enum PinMode{
+    MODE_INPUT = 0,
+    MODE_OUTPUT = 1,
+    MODE_ALTERNATE = 2,
+    MODE_ANALOG = 3
+};
+#else
+
+enum PinMode : uint8_t {
+    // --- Input configs (MODE must be 00) ---
+    MODE_ANALOG_INPUT      = 0b0000,
+    MODE_FLOATING_INPUT     = 0b0100,
+    MODE_PULL_INPUT         = 0b1000,   // pull-up/down, direction set via ODR
+
+    // --- Output configs ---
+    MODE_GP_PUSH_PULL_10    = 0b0001,
+    MODE_GP_OPEN_DRAIN_10   = 0b0101,
+    MODE_AF_PUSH_PULL_10    = 0b1001,
+    MODE_AF_OPEN_DRAIN_10   = 0b1101,
+
+    MODE_GP_PUSH_PULL_2     = 0b0010,
+    MODE_GP_OPEN_DRAIN_2    = 0b0110,
+    MODE_AF_PUSH_PULL_2     = 0b1010,
+    MODE_AF_OPEN_DRAIN_2    = 0b1110,
+
+    MODE_GP_PUSH_PULL_50     = 0b0011,
+    MODE_GP_OPEN_DRAIN_50    = 0b0111,
+    MODE_AF_PUSH_PULL_50     = 0b1011,
+    MODE_AF_OPEN_DRAIN_50    = 0b1111,
+};
+
+#endif
+
+
+/**
+ * @brief Named constants for PinState/PinMode, used via the global `pin` instance.
+ *
+ * Lets call sites read as `PIN.OUTPUT`, `pin.HIGH`, etc. instead of the
+ * raw enumerator names.
+ */
+struct PinValues {
+    static constexpr PinState LOW  = PIN_LOW;
+    static constexpr PinState HIGH = PIN_HIGH;
+    #if !defined(SIMPLESTM32_F1)
+    static constexpr PinMode INPUT     = MODE_INPUT;
+    static constexpr PinMode OUTPUT    = MODE_OUTPUT;
+    static constexpr PinMode ALTERNATE = MODE_ALTERNATE;
+    static constexpr PinMode ANALOG    = MODE_ANALOG;
+    #else
+    struct INPUT {
+        static constexpr PinMode ANALOG_INPUT     = MODE_ANALOG_INPUT;
+        static constexpr PinMode FLOATING_INPUT    = MODE_FLOATING_INPUT;
+        static constexpr PinMode PULL_INPUT = MODE_PULL_INPUT;
+    }
+    struct OUTPUT2 {
+        static constexpr PinMode GP_PUSH_PULL = MODE_GP_PUSH_PULL_2;
+        static constexpr PinMode GP_OPEN_DRAIN = MODE_GP_OPEN_DRAIN_2;
+        static constexpr PinMode AF_PUSH_PULL = MODE_AF_PUSH_PULL_2;
+        static constexpr PinMode AF_OPEN_DRAIN = MODE_AF_OPEN_DRAIN_2;
+    }
+    struct OUTPUT10 {
+        static constexpr PinMode GP_PUSH_PULL = MODE_GP_PUSH_PULL_10;
+        static constexpr PinMode GP_OPEN_DRAIN = MODE_GP_OPEN_DRAIN_10;
+        static constexpr PinMode AF_PUSH_PULL = MODE_AF_PUSH_PULL_10;
+        static constexpr PinMode AF_OPEN_DRAIN = MODE_AF_OPEN_DRAIN_10;
+    }
+    struct OUTPUT50 {
+        static constexpr PinMode GP_PUSH_PULL = MODE_GP_PUSH_PULL_50;
+        static constexpr PinMode GP_OPEN_DRAIN = MODE_GP_OPEN_DRAIN_50;
+        static constexpr PinMode AF_PUSH_PULL = MODE_AF_PUSH_PULL_50;
+        static constexpr PinMode AF_OPEN_DRAIN = MODE_AF_OPEN_DRAIN_50;
+    }
+
+    INPUT INPUT;
+    OUTPUT2 OUTPUT2;
+    OUTPUT10 OUTPUT10;
+    OUTPUT50 OUTPUT50;
+
+    #endif
+};
+inline constexpr PinValues PIN{};
+
+/**
+ * @brief Register-level GPIO pin operations, shared by every STM32 family.
+ *
+ * Operates only on a GPIO_TypeDef* (MODER/ODR/IDR), so this class is
+ * portable as-is across families -- only peripheral clock gating differs
+ * per family, which is handled by each family's PinID subclass instead.
+ */
+class GpioPin
+{
+protected:
+    GPIO_TypeDef* id;
+    GpioPin(GPIO_TypeDef* id) : id(id) {}
+public:
+    /**
+     * @brief Configure a pin's function (input, output, alternate function, analog).
+     * @param pin  Pin number within the port (0-15).
+     * @param mode One of pin.input / pin.output / pin.alternate / pin.analog.
+     */
+    void setPinMode(uint8_t pin, PinMode mode);
+
+    /**
+     * @brief Drive a pin high or low. The pin must already be set to output mode.
+     * @param pin   Pin number within the port (0-15).
+     * @param state pin.high or pin.low.
+     */
+    void writePin(uint8_t pin, PinState state);
+
+    /**
+     * @brief Read a pin's current logic level.
+     * @param pin Pin number within the port (0-15).
+     * @return pin.high or pin.low.
+     */
+    PinState readPin(uint8_t pin);
+
+    /**
+     * @brief Flip a pin's output level (high becomes low, low becomes high).
+     * @param pin Pin number within the port (0-15).
+     */
+    void togglePin(uint8_t pin);
+};
