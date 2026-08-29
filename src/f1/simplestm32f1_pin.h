@@ -14,12 +14,17 @@
  *
  * Enables/disables the port's peripheral clock via RCC->APB2ENR on
  * construction/destruction, then delegates all pin register access
- * to GpioPin.
+ * to GpioPin. Also manages AFIO's clock (AFIO->MAPR/MAPR2, peripheral pin
+ * remapping) via afioRefCount: AFIO is a single MCU-wide peripheral, not
+ * tied to any one port, so its clock is enabled when the first PinID is
+ * constructed and disabled when the last one is destroyed -- safe for any
+ * number of Pin* to overlap.
  */
 class PinID : public GpioPin
 {
 private:
     uint16_t pinmask;
+    static uint8_t afioRefCount;
 public:
     /**
      * @param pinmask RCC_APB2ENR_IOPxEN bit for the target port.

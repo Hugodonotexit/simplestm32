@@ -6,6 +6,12 @@ void GpioPin::setPinMode(uint8_t pin, PinMode mode) {
     this->id->MODER &= ~(0x3U << bit_position);
     this->id->MODER |= ((uint32_t)mode << bit_position);
 }
+
+void GpioPin::setPinAF(uint8_t pin, uint8_t af) {
+    uint32_t bit_position = (uint32_t)(pin % 8) * 4U;
+    this->id->AFR[pin / 8] &= ~(0xFU << bit_position);
+    this->id->AFR[pin / 8] |= ((uint32_t)af << bit_position);
+}
 #endif
 
 void GpioPin::writePin(uint8_t pin, PinState state) {

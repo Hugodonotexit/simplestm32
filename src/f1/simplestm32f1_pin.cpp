@@ -2,8 +2,14 @@
 
 #if defined(SIMPLESTM32_F1)
 
+uint8_t PinID::afioRefCount = 0;
+
 PinID::PinID(uint16_t pinmask, GPIO_TypeDef* id) : GpioPin(id), pinmask(pinmask) {
     RCC->APB2ENR |= pinmask;
+    if (afioRefCount == 0) {
+        RCC->APB2ENR |= RCC_APB2ENR_AFIOEN;
+    }
+    afioRefCount++;
 }
 
 void PinID::setPinMode(uint8_t pin, PinMode mode) {
@@ -22,6 +28,10 @@ void PinID::setPinPullMode(uint8_t pin, PinPullMode mode) {
 }
 PinID::~PinID() {
     RCC->APB2ENR &= ~pinmask;
+    afioRefCount--;
+    if (afioRefCount == 0) {
+        RCC->APB2ENR &= ~RCC_APB2ENR_AFIOEN;
+    }
 }
 
 #if defined(GPIOA)

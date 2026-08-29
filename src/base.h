@@ -1,6 +1,7 @@
 #pragma once
 #include <stdint.h>
 
+
 /** Logic level of a GPIO pin. */
 enum PinState{
     PIN_LOW = 0,
@@ -128,6 +129,15 @@ public:
      * @param mode One of PIN.INPUT / PIN.OUTPUT / PIN.ALTNERATIVE / PIN.ANALOG.
      */
     void setPinMode(uint8_t pin, PinMode mode);
+
+    #if !defined(SIMPLESTM32_F1)
+    /**
+     * @brief Select the alternate function routed to a pin via AFR.
+     * @param pin Pin number within the port (0-15).
+     * @param af  Alternate function number (0-15, i.e. AF0-AF15); see the datasheet's alternate function table. The pin must already be set to PIN.ALTERNATE mode.
+     */
+    void setPinAF(uint8_t pin, uint8_t af);
+    #endif
 
     /**
      * @brief Drive a pin high or low. The pin must already be set to output mode.
