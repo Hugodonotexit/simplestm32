@@ -75,3 +75,5 @@
 #else
 #error "Unsupported or undefined STM32 device. Please define the target STM32 device."
 #endif
+
+#include "badTimer.h"
