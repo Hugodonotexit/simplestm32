@@ -23,6 +23,12 @@ enum PinPullMode {
     MODE_PULLDOWN = 2,
 };
 
+/** Output driver type for a pin, as programmed in the port's OTYPER register. */
+enum PinOutputType {
+    TYPE_PUSH_PULL = 0,
+    TYPE_OPEN_DRAIN = 1,
+};
+
 #else
 
 enum PinMode : uint8_t {
@@ -74,6 +80,8 @@ struct PinValues {
     static constexpr PinPullMode PULLUP    = MODE_PULLUP;
     static constexpr PinPullMode PULLDOWN = MODE_PULLDOWN;
     static constexpr PinPullMode FLOATING    = MODE_FLOATING;
+    static constexpr PinOutputType PUSH_PULL  = TYPE_PUSH_PULL;
+    static constexpr PinOutputType OPEN_DRAIN = TYPE_OPEN_DRAIN;
     #else
     static constexpr PinPullMode PULLUP    = MODE_PULLUP;
     static constexpr PinPullMode PULLDOWN = MODE_PULLDOWN;
@@ -126,7 +134,7 @@ public:
     /**
      * @brief Configure a pin's function (input, output, alternate function, analog).
      * @param pin  Pin number within the port (0-15).
-     * @param mode One of PIN.INPUT / PIN.OUTPUT / PIN.ALTNERATIVE / PIN.ANALOG.
+     * @param mode One of PIN.INPUT / PIN.OUTPUT / PIN.ALTERNATE / PIN.ANALOG.
      */
     void setPinMode(uint8_t pin, PinMode mode);
 
@@ -137,6 +145,13 @@ public:
      * @param af  Alternate function number (0-15, i.e. AF0-AF15); see the datasheet's alternate function table. The pin must already be set to PIN.ALTERNATE mode.
      */
     void setPinAF(uint8_t pin, uint8_t af);
+
+    /**
+     * @brief Select push-pull or open-drain output for a pin via OTYPER.
+     * @param pin  Pin number within the port (0-15).
+     * @param type PIN.PUSH_PULL or PIN.OPEN_DRAIN.
+     */
+    void setPinOutputType(uint8_t pin, PinOutputType type);
     #endif
 
     /**

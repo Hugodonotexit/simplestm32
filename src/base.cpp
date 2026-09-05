@@ -12,6 +12,11 @@ void GpioPin::setPinAF(uint8_t pin, uint8_t af) {
     this->id->AFR[pin / 8] &= ~(0xFU << bit_position);
     this->id->AFR[pin / 8] |= ((uint32_t)af << bit_position);
 }
+
+void GpioPin::setPinOutputType(uint8_t pin, PinOutputType type) {
+    this->id->OTYPER &= ~(1U << pin);
+    this->id->OTYPER |= ((uint32_t)type << pin);
+}
 #endif
 
 void GpioPin::writePin(uint8_t pin, PinState state) {
