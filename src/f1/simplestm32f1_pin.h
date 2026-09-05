@@ -6,7 +6,7 @@
 // wholesale to a build targeting a different STM32 family.
 #if defined(SIMPLESTM32_F1)
 
-#include "stm32f1xx.h"
+#include "../../vendor/cmsis_device_f1/Include/stm32f1xx.h"
 #include "../base.h"
 
 /**

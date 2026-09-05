@@ -1,0 +1,69 @@
+[submodule "vendor/cmsis_core"]
+	path = vendor/cmsis_core
+	url = https://github.com/STMicroelectronics/cmsis_core.git
+[submodule "vendor/cmsis_device_c0"]
+	path = vendor/cmsis_device_c0
+	url = https://github.com/STMicroelectronics/cmsis_device_c0.git
+[submodule "vendor/cmsis_device_f0"]
+	path = vendor/cmsis_device_f0
+	url = https://github.com/STMicroelectronics/cmsis_device_f0.git
+[submodule "vendor/cmsis_device_f1"]
+	path = vendor/cmsis_device_f1
+	url = https://github.com/STMicroelectronics/cmsis_device_f1.git
+[submodule "vendor/cmsis_device_f2"]
+	path = vendor/cmsis_device_f2
+	url = https://github.com/STMicroelectronics/cmsis_device_f2.git
+[submodule "vendor/cmsis_device_f3"]
+	path = vendor/cmsis_device_f3
+	url = https://github.com/STMicroelectronics/cmsis_device_f3.git
+[submodule "vendor/cmsis_device_f4"]
+	path = vendor/cmsis_device_f4
+	url = https://github.com/STMicroelectronics/cmsis_device_f4.git
+[submodule "vendor/cmsis_device_f7"]
+	path = vendor/cmsis_device_f7
+	url = https://github.com/STMicroelectronics/cmsis_device_f7.git
+[submodule "vendor/cmsis_device_g0"]
+	path = vendor/cmsis_device_g0
+	url = https://github.com/STMicroelectronics/cmsis_device_g0.git
+[submodule "vendor/cmsis_device_g4"]
+	path = vendor/cmsis_device_g4
+	url = https://github.com/STMicroelectronics/cmsis_device_g4.git
+[submodule "vendor/cmsis_device_h5"]
+	path = vendor/cmsis_device_h5
+	url = https://github.com/STMicroelectronics/cmsis_device_h5.git
+[submodule "vendor/cmsis_device_h7"]
+	path = vendor/cmsis_device_h7
+	url = https://github.com/STMicroelectronics/cmsis_device_h7.git
+[submodule "vendor/cmsis_device_h7rs"]
+	path = vendor/cmsis_device_h7rs
+	url = https://github.com/STMicroelectronics/cmsis_device_h7rs.git
+[submodule "vendor/cmsis_device_l0"]
+	path = vendor/cmsis_device_l0
+	url = https://github.com/STMicroelectronics/cmsis_device_l0.git
+[submodule "vendor/cmsis_device_l1"]
+	path = vendor/cmsis_device_l1
+	url = https://github.com/STMicroelectronics/cmsis_device_l1.git
+[submodule "vendor/cmsis_device_l4"]
+	path = vendor/cmsis_device_l4
+	url = https://github.com/STMicroelectronics/cmsis_device_l4.git
+[submodule "vendor/cmsis_device_l5"]
+	path = vendor/cmsis_device_l5
+	url = https://github.com/STMicroelectronics/cmsis_device_l5.git
+[submodule "vendor/cmsis_device_n6"]
+	path = vendor/cmsis_device_n6
+	url = https://github.com/STMicroelectronics/cmsis-device-n6.git
+[submodule "vendor/cmsis_device_u0"]
+	path = vendor/cmsis_device_u0
+	url = https://github.com/STMicroelectronics/cmsis_device_u0.git
+[submodule "vendor/cmsis_device_u5"]
+	path = vendor/cmsis_device_u5
+	url = https://github.com/STMicroelectronics/cmsis_device_u5.git
+[submodule "vendor/cmsis_device_wb"]
+	path = vendor/cmsis_device_wb
+	url = https://github.com/STMicroelectronics/cmsis_device_wb.git
+[submodule "vendor/cmsis_device_wba"]
+	path = vendor/cmsis_device_wba
+	url = https://github.com/STMicroelectronics/cmsis_device_wba.git
+[submodule "vendor/cmsis_device_wl"]
+	path = vendor/cmsis_device_wl
+	url = https://github.com/STMicroelectronics/cmsis_device_wl.git

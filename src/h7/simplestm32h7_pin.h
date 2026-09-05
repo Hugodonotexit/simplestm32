@@ -6,7 +6,7 @@
 // wholesale to a build targeting a different STM32 family.
 #if defined(SIMPLESTM32_H7)
 
-#include "stm32h7xx.h"
+#include "../../vendor/cmsis_device_h7/Include/stm32h7xx.h"
 #include "../base.h"
 
 /**

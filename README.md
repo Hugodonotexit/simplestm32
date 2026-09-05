@@ -28,15 +28,21 @@ int main(void)
 
 ## Using it in a project
 
-1. Define your target device macro (e.g. `STM32C031xx`), the same one the CMSIS device header expects.
-2. Add `simplestm32/src` to your include path **and** recursively to your sources (every `.cpp` under it).
-3. `#include "simplestm32.h"`.
+1. Clone with submodules (`git clone --recurse-submodules`, or `git submodule update --init --recursive` if already cloned) — see [CMSIS headers](#cmsis-headers) below.
+2. Define your target device macro (e.g. `STM32C031xx`), the same one the CMSIS device header expects.
+3. Add `simplestm32/src` to your include path **and** recursively to your sources (every `.cpp` under it), plus `vendor/cmsis_core/CMSIS/Core/Include` and your target family's `vendor/cmsis_device_<family>/Include`.
+4. Compile in your target family's `vendor/cmsis_device_<family>/Source/Templates/system_stm32<family>xx.c`.
+5. `#include "simplestm32.h"`.
 
 No need to cherry-pick which family's `.cpp` files to add: every family's `_pin.h`/`_pin.cpp` is guarded on that family, so the 21 families that don't match your target compile down to nothing — only the one matching your `#define` produces any code. So `file(GLOB_RECURSE ...)` (or your build system's equivalent) over `simplestm32/src` just works, same as [`stmenv1/CMakeLists.txt`](../stmenv1/CMakeLists.txt) does it.
 
+## CMSIS headers
+
+`vendor/` holds one git submodule per family (`cmsis_device_<family>`, ST's official repo — `Include/` + `Source/Templates/` only, no HAL) plus `cmsis_core` (ARM's CMSIS-Core, `core_cm0plus.h` etc.), which every family's device header needs but doesn't bundle. Each `<family>/simplestm32<family>_pin.h` includes its own family's header directly by relative path (`../../vendor/cmsis_device_<family>/Include/stm32<family>xx.h`), so consuming a family no longer means vendoring ST's `Drivers/` tree yourself — just add the two include paths above and compile in that family's `system_stm32<family>xx.c`, as [`stmenv1/CMakeLists.txt`](../stmenv1/CMakeLists.txt) does.
+
 ## Architecture
 
-- **`base.h` / `base.cpp`** — `GpioPin`, the portable part. Pure register operations (`setPinMode`, `setPinPullMode`, `writePin`, `readPin`, `togglePin`) on a `GPIO_TypeDef*`. `writePin`/`readPin`/`togglePin` (via `ODR`/`IDR`) are identical across every family, F1 included, so they never need porting. `setPinMode` (`MODER`) and `setPinPullMode` (`PUPDR`) are the exceptions — F1 has neither register; see the F1 note below.
+- **`base.h` / `base.cpp`** — `GpioPin`, the portable part. Pure register operations (`setPinMode`, `setPinPullMode`, `setPinAF`, `setPinOutputType`, `writePin`, `readPin`, `togglePin`) on a `GPIO_TypeDef*`. `writePin`/`readPin`/`togglePin` (via `ODR`/`IDR`) are identical across every family, F1 included, so they never need porting. `setPinMode` (`MODER`), `setPinPullMode` (`PUPDR`), `setPinAF` (`AFR`), and `setPinOutputType` (`OTYPER`) are the exceptions — F1 has none of these registers; see the F1 note below.
 - **`<family>/simplestm32<family>_device.h`** — the *only* place a family's raw device-macro list (`STM32F401xC`, `STM32F407xx`, ...) lives. It does nothing but check those macros and, if they match, define `SIMPLESTM32_<FAMILY>` and `SIMPLESTM32_DEVICE_MATCHED` — no CMSIS include, no classes, so it's always safe to include from anywhere. Every other family-specific file — `_pin.h` today, a future `_uart.h`/`_timer.h` — includes this and guards on the short derived macro instead of repeating the device list. A new device variant in an existing family only ever touches this one file.
 - **`<family>/simplestm32<family>_pin.h/.cpp`** — `PinID`, the family-specific clock-gating piece: enabling/disabling the port's peripheral clock in its constructor/destructor. The RCC register and bit-name prefix differ per family (see table below).
 - **`PinA` … `PinK`** — one thin subclass of `PinID` per GPIO port, each wrapped in `#if defined(GPIOx)` so only the ports that actually exist on the specific chip you're building for get compiled in. This also means a `PinA` object anywhere always means "port A on whatever chip you're targeting."
@@ -68,7 +74,7 @@ The [`stmenv1/`](../stmenv1) folder at the repository root is a CMake project ta
 ## Known limitations
 
 - GPIO only — no UART, SPI, I2C, timers, or clock configuration yet.
-- No package/install target; consumed by pointing your own build at `src/`.
+- No package/install target; consumed by pointing your own build at `src/` and the relevant `vendor/` submodule include paths.
 - No semantic versioning yet — this is alpha, expect breaking changes.
 
 ## License
